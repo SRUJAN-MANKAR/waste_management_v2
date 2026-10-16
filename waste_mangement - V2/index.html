@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoSync – Smart Waste Management Digital Twin</title>
+  <meta name="description"
+    content="Smart Waste Management Digital Twin with Computer Vision waste segregation, real-time waste tracking, collector portal and locality leaderboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="frontend/css/styles.css" />
+</head>
+
+<body>
+  <!-- ───────── START / WELCOME PAGE ───────── -->
+  <div id="startScreen" class="start-screen active">
+    <!-- Ambient glowing backgrounds -->
+    <div class="start-ambient-glow glow-1"></div>
+    <div class="start-ambient-glow glow-2"></div>
+
+    <!-- Start Page Header -->
+    <header class="start-nav">
+      <div class="start-brand">
+        <span class="start-brand-icon">♻️</span>
+        <div>
+          <span class="start-brand-title">EcoSync</span>
+          <span class="start-brand-sub">Smart Waste &amp; CV Bin Digital Twin</span>
+        </div>
+      </div>
+      <div class="start-status-pills">
+        <span class="status-pill"><span class="dot-live"></span> CV Vision Engine: <strong>Active</strong></span>
+        <span class="status-pill"><span class="dot-live"></span> IoT Bins: <strong>12 Connected</strong></span>
+        <span class="status-pill"><span class="dot-live"></span> Collection Fleet: <strong>Online</strong></span>
+      </div>
+    </header>
+
+    <!-- Main Visual Stage: Waste Collection Way connecting Top Left to Top Right CV Bin -->
+    <div class="start-visual-stage">
+
+      <!-- TOP LEFT CORNER: Waste Collection Origin & Community -->
+      <div class="way-node node-top-left" id="nodeWasteOrigin">
+        <div class="node-header">
+          <span class="node-badge">📍 WASTE COLLECTION</span>
+          <span class="node-status"><span class="ping-dot"></span> Sourcing Active</span>
+        </div>
+        <div class="node-card">
+          <div class="node-icon-row">
+            <span class="node-large-icon">🏘️</span>
+            <span class="node-flow-arrow">➔</span>
+            <span class="node-large-icon">🚛</span>
+            <span class="node-large-icon">🛺</span>
+          </div>
+          <h4 class="node-title">Waste Collection &amp; Aggregation</h4>
+          <p class="node-desc">Household segregation, citizen drop-off, and informal collector dispatch route.</p>
+          <div class="node-stats-mini">
+            <span>📦 <strong>1,480 kg/day</strong> sourced</span>
+            <span>⚡ <strong>8 Trucks</strong> dispatched</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- THE CONNECTING WAY / HIGHWAY (SVG PATH with animated motion) -->
+      <div class="waste-way-container">
+        <svg class="waste-way-svg" viewBox="0 0 1000 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wayGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#059669" stop-opacity="0.8" />
+              <stop offset="50%" stop-color="#10B981" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#059669" stop-opacity="1" />
+            </linearGradient>
+            <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Broad Road Track / Conduit -->
+          <path class="way-road-base" d="M 120 70 C 350 15, 650 205, 870 75" />
+          <path class="way-road-glow" d="M 120 70 C 350 15, 650 205, 870 75" filter="url(#glowFilter)" />
+          <!-- Animated Flow Line -->
+          <path id="collectionPath" class="way-flow-line" d="M 120 70 C 350 15, 650 205, 870 75" />
+
+          <!-- Waypoints along the path -->
+          <!-- Point 1: Source (Top Left) -->
+          <circle cx="120" cy="70" r="7" class="way-point-circle" />
+          <circle cx="120" cy="70" r="13" class="way-point-ripple" />
+
+          <!-- Point 2: Informal Picker Junction -->
+          <g transform="translate(360, 60)">
+            <circle cx="0" cy="0" r="6" class="way-point-circle" />
+            <rect x="-62" y="12" width="124" height="22" rx="11" class="way-pill-bg" />
+            <text x="0" y="27" text-anchor="middle" class="way-pill-text">🛺 Informal Pickers</text>
+          </g>
+
+          <!-- Point 3: Transit Routing -->
+          <g transform="translate(630, 140)">
+            <circle cx="0" cy="0" r="6" class="way-point-circle" />
+            <rect x="-65" y="12" width="130" height="22" rx="11" class="way-pill-bg" />
+            <text x="0" y="27" text-anchor="middle" class="way-pill-text">🚛 Municipal Fleet</text>
+          </g>
+
+          <!-- Point 4: CV Bin Arrival (Top Right) -->
+          <circle cx="870" cy="75" r="7" class="way-point-circle" />
+          <circle cx="870" cy="75" r="14" class="way-point-ripple" />
+
+          <!-- Animated Waste Collection Truck traveling along path -->
+          <g class="truck-animator">
+            <animateMotion dur="7s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#collectionPath" />
+            </animateMotion>
+            <rect x="-16" y="-11" width="32" height="20" rx="5" fill="#064E3B" stroke="#10B981" stroke-width="1.5" />
+            <text x="0" y="3" text-anchor="middle" font-size="11" fill="#FFFFFF">🚛</text>
+          </g>
+
+          <!-- Animated Informal Collector Cart traveling with slight offset -->
+          <g class="cart-animator">
+            <animateMotion dur="9s" begin="-3.5s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#collectionPath" />
+            </animateMotion>
+            <rect x="-14" y="-10" width="28" height="18" rx="4" fill="#047857" stroke="#A7F3D0" stroke-width="1.2" />
+            <text x="0" y="3" text-anchor="middle" font-size="10" fill="#FFFFFF">🛺</text>
+          </g>
+
+          <!-- Animated Waste Item 1 (Recyclable Plastic) -->
+          <g>
+            <animateMotion dur="4.5s" begin="-1s" repeatCount="indefinite">
+              <mpath href="#collectionPath" />
+            </animateMotion>
+            <circle cx="0" cy="0" r="9" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1" />
+            <text x="0" y="3" text-anchor="middle" font-size="9" fill="#FFFFFF">🥤</text>
+          </g>
+
+          <!-- Animated Waste Item 2 (Organic) -->
+          <g>
+            <animateMotion dur="4.5s" begin="-2.5s" repeatCount="indefinite">
+              <mpath href="#collectionPath" />
+            </animateMotion>
+            <circle cx="0" cy="0" r="9" fill="#22C55E" stroke="#FFFFFF" stroke-width="1" />
+            <text x="0" y="3" text-anchor="middle" font-size="9" fill="#FFFFFF">🍏</text>
+          </g>
+
+          <!-- Animated Waste Item 3 (Hazardous / E-Waste) -->
+          <g>
+            <animateMotion dur="4.5s" begin="-3.8s" repeatCount="indefinite">
+              <mpath href="#collectionPath" />
+            </animateMotion>
+            <circle cx="0" cy="0" r="9" fill="#EF4444" stroke="#FFFFFF" stroke-width="1" />
+            <text x="0" y="3" text-anchor="middle" font-size="9" fill="#FFFFFF">🔋</text>
+          </g>
+        </svg>
+
+        <!-- Route label badge centered across the way -->
+        <div class="way-center-badge">
+          <span class="way-badge-pulse"></span>
+          <span class="way-badge-text">WASTE COLLECTION WAY ➔ SMART CV BIN INGESTION</span>
+        </div>
+      </div>
+
+      <!-- TOP RIGHT CORNER: THE SMART CV BIN DIGITAL TWIN -->
+      <div class="way-node node-top-right" id="nodeCVBin">
+        <div class="node-header">
+          <span class="node-badge cv-badge">🗑️ SMART CV BIN</span>
+          <span class="node-status cv-status"><span class="ping-dot green"></span> AI Vision Online</span>
+        </div>
+
+        <div class="start-cv-card">
+          <!-- CV Optical Scanner Viewport -->
+          <div class="cv-scanner-viewport">
+            <div class="cv-lens-header">
+              <span class="cv-cam-pill"><span class="record-dot"></span> CAM-01 [LIVE CV]</span>
+              <span class="cv-fps">30 FPS · 4K</span>
+            </div>
+
+            <div class="cv-scan-window">
+              <!-- Moving laser beam -->
+              <div class="cv-laser-beam"></div>
+
+              <!-- Dynamic Bounding Box -->
+              <div class="cv-hud-box">
+                <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+                <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+                <div class="hud-target-icon" id="startCvIcon">🥤</div>
+                <div class="hud-label-tag" id="startCvTag">
+                  <span class="tag-cat">PLASTIC BOTTLE</span>
+                  <span class="tag-conf">97.8% RECYCLABLE</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-status-ticker">
+              <span class="cv-ticker-light"></span>
+              <span class="cv-ticker-msg" id="startCvTicker">AUTO-SORTING INTO [DRY RECYCLABLE] CHAMBER</span>
+            </div>
+          </div>
+
+          <!-- Physical 4-Chamber CV Bin Model Representation -->
+          <div class="cv-chambers-hud">
+            <div class="cv-chamber-mini wet">
+              <div class="chamber-fill-bar" style="height: 68%;"></div>
+              <span class="chamber-lbl">Wet 68%</span>
+            </div>
+            <div class="cv-chamber-mini dry">
+              <div class="chamber-fill-bar" style="height: 42%;"></div>
+              <span class="chamber-lbl">Dry 42%</span>
+            </div>
+            <div class="cv-chamber-mini haz">
+              <div class="chamber-fill-bar" style="height: 15%;"></div>
+              <span class="chamber-lbl">Haz 15%</span>
+            </div>
+            <div class="cv-chamber-mini nonrec">
+              <div class="chamber-fill-bar" style="height: 30%;"></div>
+              <span class="chamber-lbl">Non-Rec 30%</span>
+            </div>
+          </div>
+
+          <div class="cv-twin-footer">
+            <span>Digital Twin: <strong>Bin #01 Sync OK</strong></span>
+            <span class="cv-badge-auto">⚡ Auto-Flap Ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Hero Section -->
+    <div class="start-hero-content">
+      <div class="hero-tagline-wrapper">
+        <span class="hero-tagline-pill">🌿 MUNICIPAL &amp; COLLECTOR CIRCULAR ECOSYSTEM</span>
+      </div>
+      <h1 class="start-main-title">INTELLIGENT CV BIN &amp; WASTE COLLECTION PLATFORM</h1>
+      <p class="start-main-subtitle">
+        Bridging community collection, informal waste collectors, and municipal digital twin monitoring through
+        autonomous Computer Vision waste sorting and transparent circular economics.
+      </p>
+
+      <!-- Prominent START Action Button -->
+      <div class="start-cta-group">
+        <button id="btnStartPlatform" class="btn-start-massive">
+          <div class="btn-shine"></div>
+          <span class="btn-massive-icon">🚀</span>
+          <div class="btn-massive-text">
+            <span class="btn-title">START ECOSYSTEM</span>
+            <span class="btn-subtitle">Click to enter the live management dashboard &amp; digital twin</span>
+          </div>
+          <span class="btn-massive-arrow">➔</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Portals -->
+      <div class="start-direct-links">
+        <span class="direct-label">Or jump directly to:</span>
+        <button class="btn-direct" data-jump="dashboard">📊 Locality Dashboard</button>
+        <button class="btn-direct" data-jump="smartbin">🗑️ 3D Digital Dustbin Twin</button>
+        <button class="btn-direct" data-jump="collector">🚛 Informal Collector Portal</button>
+        <button class="btn-direct" data-jump="tracking">🗺️ Live Waste Tracking Map</button>
+      </div>
+
+      <!-- Feature Grid -->
+      <div class="start-pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon">👁️</div>
+          <h5>Computer Vision Bins</h5>
+          <p>Automated multi-spectral camera classification sorting waste into 4 streams with 98% accuracy.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">🛺</div>
+          <h5>Informal Collector Uplift</h5>
+          <p>Digital scale weigh-in, instant QR UPI payments, and gamified community segregation incentives.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">🏛️</div>
+          <h5>Municipal Digital Twin</h5>
+          <p>Real-time bin fullness monitoring, proactive overflow alerts, and AI-optimized transit routing.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-icon">📊</div>
+          <h5>Locality Leaderboard</h5>
+          <p>Transparent ward rankings, ESG compliance reporting, and citizen segregation scorecards.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── SIDEBAR ───────── -->
+  <nav id="sidebar">
+    <div class="sidebar-logo" id="sidebarLogo" title="Click to view Start Page">
+      <span class="logo-icon">♻️</span>
+      <h1>EcoSync</h1>
+      <span class="badge-sim">Simulated · Hardware-Ready</span>
+    </div>
+    <div class="sidebar-start-shortcut">
+      <button id="btnReturnStart" class="btn-return-start" title="Return to Start Page">
+        <span class="btn-icon">🏠</span> Start Screen
+      </button>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" class="nav-link active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</a></li>
+      <li><a href="#" class="nav-link" data-page="smartbin"><span class="nav-icon">🗑️</span>3D Digital Dustbin</a></li>
+      <li><a href="#" class="nav-link" data-page="collector"><span class="nav-icon">🚛</span>Collector Portal</a></li>
+      <li><a href="#" class="nav-link" data-page="tracking"><span class="nav-icon">🗺️</span>Waste Tracking</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <div class="sim-clock">
+        <span class="clock-icon">🕐</span>
+        <span id="simTime">06:00 AM</span>
+      </div>
+      <button id="btnAdvanceTime" class="btn-advance" title="Advance simulation by 1 hour">⏩ Advance 1 hr</button>
+    </div>
+  </nav>
+
+  <!-- ───────── MAIN CONTENT ───────── -->
+  <main id="mainContent">
+
+    <!-- ====== PAGE: DASHBOARD ====== -->
+    <section id="page-dashboard" class="page active">
+      <header class="page-header">
+        <h2>Locality Dashboard</h2>
+        <p class="subtitle">Real-time overview of waste management across the locality</p>
+      </header>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card" id="statBins">
+          <div class="stat-icon">🗑️</div>
+          <div class="stat-info">
+            <span class="stat-value" id="valTotalBins">12</span>
+            <span class="stat-label">Smart Bins</span>
+          </div>
+        </div>
+        <div class="stat-card" id="statScore">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <span class="stat-value" id="valSegScore">92%</span>
+            <span class="stat-label">Segregation Score</span>
+          </div>
+        </div>
+        <div class="stat-card alert-card" id="statAlerts">
+          <div class="stat-icon">🔔</div>
+          <div class="stat-info">
+            <span class="stat-value" id="valAlerts">0</span>
+            <span class="stat-label">Active Alerts</span>
+          </div>
+        </div>
+        <div class="stat-card" id="statRecycled">
+          <div class="stat-icon">♻️</div>
+          <div class="stat-info">
+            <span class="stat-value" id="valRecycled">78%</span>
+            <span class="stat-label">Recycled Today</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-column layout -->
+      <div class="dashboard-grid">
+        <!-- Locality Map (100% Offline Bengaluru Digital Twin) -->
+        <div class="card card-map">
+          <div class="map-card-header">
+            <div>
+              <h3>Bengaluru Urban Twin – Smart Bin Grid</h3>
+              <p class="map-card-sub">BBMP Ward Intelligence · 12 Monitored Nodes Across Bengaluru (100% Offline)</p>
+            </div>
+            <div class="map-header-badges">
+              <span class="map-api-badge"><span class="dot-live"></span> Offline Map Engine: Active</span>
+              <span class="blr-badge">📍 Bengaluru (BBMP)</span>
+            </div>
+          </div>
+          <div class="map-container" id="localityMap">
+            <!-- 100% Offline High-Precision Bengaluru Map Rendered by JS -->
+          </div>
+          <div class="map-legend">
+            <span class="legend-item"><span class="legend-dot green"></span> &lt;50% Normal</span>
+            <span class="legend-item"><span class="legend-dot amber"></span> 50–80% Moderate</span>
+            <span class="legend-item"><span class="legend-dot red"></span> &gt;80% Critical / Full</span>
+            <span class="legend-item"><span class="legend-icon-badge water"></span> Lakes</span>
+            <span class="legend-item"><span class="legend-icon-badge park"></span> Parks</span>
+            <span class="legend-item"><span class="legend-icon-badge orr"></span> ORR Corridor</span>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="card card-leaderboard">
+          <h3>🏆 Locality Leaderboard</h3>
+          <table id="leaderboardTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Locality</th>
+                <th>Score</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recycling Units Status -->
+      <div class="card card-wide">
+        <h3>Recycling &amp; Processing Units Status</h3>
+        <div class="units-row" id="unitsRow">
+          <!-- JS fills -->
+        </div>
+      </div>
+
+      <!-- GenAI Report -->
+      <div class="card card-wide card-genai">
+        <h3>🤖 GenAI Insights</h3>
+        <div class="genai-content">
+          <div class="genai-report" id="genaiReport">
+            <p class="placeholder">Click "Generate Report" to get a plain-language summary.</p>
+          </div>
+          <div class="genai-actions">
+            <button class="btn btn-primary" id="btnGenReport">Generate Report</button>
+            <button class="btn btn-outline" id="btnWhatIf">What-if: Add 1 Truck</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== PAGE: 3D DIGITAL DUSTBIN TWIN ====== -->
+    <section id="page-smartbin" class="page">
+      <header class="page-header">
+        <h2>3D Smart Dustbin – Digital Twin</h2>
+        <p class="subtitle">Interactive 3D Three.js physics stage · Multi-compartment optical CV scanner · Automatic
+          wrong-sort ejection &amp; re-routing</p>
+      </header>
+
+      <!-- 3D Digital Twin Stage (Merged from app.py) -->
+      <div class="twin-3d-wrapper">
+        <div class="twin-3d-header">
+          <div class="twin-3d-title">
+            <span class="pulse-indicator"></span>
+            <h3>3D Digital Dustbin Stage — Autonomous Flap &amp; Multi-Spectral CV Chute</h3>
+            <span class="badge-tech">Three.js WebGL</span>
+            <span class="badge-tech">SQLite Synced</span>
+            <span class="badge-tech">100% Offline Ready</span>
+          </div>
+          <div class="twin-3d-controls-top">
+            <button class="btn btn-sm btn-ghost" id="btn3DResetCam" title="Reset 3D camera to default viewpoint">🎯
+              Reset View</button>
+            <button class="btn btn-sm btn-gold" id="btn3DReplay" title="Replay previous 3D drop animation">↺ Replay 3D
+              Drop</button>
+          </div>
+        </div>
+
+        <!-- 3D Canvas Viewport -->
+        <div id="dustbin3DStage" class="dustbin-3d-canvas-container">
+          <div id="chip3D" class="chip-3d">Item ready · Select compartment &amp; drop waste</div>
+          <div class="orbit-hint-badge">🖱️ Drag to rotate 3D view · Scroll to zoom</div>
+          <div id="card3D" class="card-3d">
+            <b id="c3dTitle"></b>
+            <span id="c3dMsg"></span>
+            <small id="c3dScore"></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Compartment Meters -->
+      <div class="bins-grid">
+        <div class="bin-card" data-type="wet">
+          <div class="bin-visual">
+            <div class="bin-body">
+              <div class="bin-fill" id="fillWet" style="height:35%"></div>
+            </div>
+            <div class="bin-lid wet"></div>
+          </div>
+          <h4>🟢 Wet Waste</h4>
+          <span class="fill-pct" id="pctWet">35%</span>
+          <span class="bin-tag">Green Bag · Compost Facility</span>
+        </div>
+        <div class="bin-card" data-type="dry">
+          <div class="bin-visual">
+            <div class="bin-body">
+              <div class="bin-fill" id="fillDry" style="height:50%"></div>
+            </div>
+            <div class="bin-lid dry"></div>
+          </div>
+          <h4>🔵 Dry Recyclable</h4>
+          <span class="fill-pct" id="pctDry">50%</span>
+          <span class="bin-tag">Blue Bag · Recycling Yard</span>
+        </div>
+        <div class="bin-card" data-type="hazardous">
+          <div class="bin-visual">
+            <div class="bin-body">
+              <div class="bin-fill" id="fillHaz" style="height:20%"></div>
+            </div>
+            <div class="bin-lid hazardous"></div>
+          </div>
+          <h4>🔴 Hazardous</h4>
+          <span class="fill-pct" id="pctHaz">20%</span>
+          <span class="bin-tag">Red Bag · Safe Disposal</span>
+        </div>
+        <div class="bin-card" data-type="nonrecyclable">
+          <div class="bin-visual">
+            <div class="bin-body">
+              <div class="bin-fill" id="fillNon" style="height:45%"></div>
+            </div>
+            <div class="bin-lid nonrecyclable"></div>
+          </div>
+          <h4>⚫ Non-Recyclable</h4>
+          <span class="fill-pct" id="pctNon">45%</span>
+          <span class="bin-tag">Black Bag · Landfill</span>
+        </div>
+      </div>
+
+      <!-- Control Deck: Step 1 (Compartment), Step 2 (Item), Step 3 (Action & Result) -->
+      <div class="deck-grid">
+        <!-- Left Deck: Controls & Item Sourcing -->
+        <div class="card">
+          <h4 class="deck-section-title"><span>1️⃣</span> Compartment You Will Use</h4>
+          <div class="compartment-selector-grid" id="compSelectorGrid">
+            <button class="btn-compartment active" data-comp="wet">
+              <span class="comp-icon">🟢</span>
+              <span class="comp-label">Wet Waste</span>
+              <span class="comp-sub">Compost</span>
+            </button>
+            <button class="btn-compartment" data-comp="dry">
+              <span class="comp-icon">🔵</span>
+              <span class="comp-label">Dry Recyclable</span>
+              <span class="comp-sub">Recycler</span>
+            </button>
+            <button class="btn-compartment" data-comp="hazardous">
+              <span class="comp-icon">🔴</span>
+              <span class="comp-label">Hazardous</span>
+              <span class="comp-sub">Safe Disposal</span>
+            </button>
+            <button class="btn-compartment" data-comp="nonrecyclable">
+              <span class="comp-icon">⚫</span>
+              <span class="comp-label">Non-Recyclable</span>
+              <span class="comp-sub">Landfill</span>
+            </button>
+          </div>
+
+          <h4 class="deck-section-title"><span>2️⃣</span> Waste Item to Drop</h4>
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="btn btn-sm btn-primary" id="tabBtnSamples">📦 Sample Library</button>
+            <button class="btn btn-sm btn-ghost" id="tabBtnPhoto">📷 Upload Photo</button>
+          </div>
+
+          <!-- Sample Items Grid -->
+          <div id="deckSamplesContainer">
+            <div class="samples-scroll-grid" id="samplesGrid">
+              <!-- JS dynamically populates from WASTE_SAMPLE_CATALOG -->
+            </div>
+          </div>
+
+          <!-- Photo Upload Box -->
+          <div id="deckPhotoContainer" style="display:none;">
+            <div class="photo-drop-box" id="dropPhotoZone">
+              <div id="dropPhotoPlaceholder">
+                <span style="font-size:2rem; display:block; margin-bottom:6px;">📸</span>
+                <strong>Click or Drag Photo of Waste</strong>
+                <p style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">Photo will be texture-mapped
+                  directly onto the 3D item</p>
+              </div>
+              <div id="dropPhotoPreviewWrap" class="photo-preview-wrap" style="display:none;">
+                <img id="dropPhotoPreviewImg" src="" alt="Waste Preview" />
+                <div style="text-align:left;">
+                  <strong style="font-size:0.85rem;" id="dropPhotoFileName">custom_photo.jpg</strong>
+                  <br>
+                  <button class="btn btn-xs btn-outline" id="btnRemoveDropPhoto" style="margin-top:4px;">Remove</button>
+                </div>
+              </div>
+              <input type="file" id="dropPhotoInput" accept="image/*" style="display:none;" />
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="drop-action-bar">
+            <button id="btnTrigger3DDrop" class="btn-drop-main">
+              <span>🗑️</span> Throw Waste into 3D Bin &amp; Run CV
+            </button>
+            <button id="btnRandom3DDrop" class="btn btn-outline" title="Pick random waste item">
+              🎲 Random Item
+            </button>
+            <button id="btnWrongSortTest" class="btn btn-outline"
+              style="color:#ef4444; border-color:rgba(239,68,68,0.3)"
+              title="Intentionally drop in wrong bin to test automatic re-routing">
+              ⚠️ Test Wrong Sort
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Deck: CV Classification & GenAI Guidance -->
+        <div class="card card-result">
+          <h4 class="deck-section-title"><span>3️⃣</span> Optical CV Scanner &amp; AI Analysis</h4>
+
+          <div id="classResult" class="class-result">
+            <div class="result-display" id="cvResultBox">
+              <div class="result-type dry" id="resTypeTag">🔵 Dry Recyclable</div>
+              <div style="font-size:0.82rem; color:var(--text-dim); margin-bottom:6px" id="resConfText">Confidence:
+                97.6% (Optical Sensor)</div>
+              <div class="confidence-bar">
+                <div class="confidence-fill" id="resConfFill" style="width:97.6%; background:#3b82f6"></div>
+              </div>
+              <div class="result-details" id="resDetails">
+                <strong>Target Compartment:</strong> <span id="resDeclared">Dry Recyclable</span><br>
+                <strong>CV Detected Stream:</strong> <span id="resSeen">Dry Recyclable</span><br>
+                <strong>Destination Facility:</strong> <span id="resDest">Recycling Yard</span><br>
+                <strong>Sorting Status:</strong> <span id="resStatus">Ready for drop simulation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- GenAI Educational Guidance Box -->
+          <div
+            style="margin-top:16px; padding:14px; background:linear-gradient(135deg, #f8fafc 0%, #ecfdf5 100%); border-radius:12px; border:1px solid rgba(5,150,105,0.2);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span style="font-size:1.1rem;">🤖</span>
+              <strong style="font-size:0.86rem; color:var(--forest);">GenAI Sorting Guidance (EcoSync Twin)</strong>
+            </div>
+            <p id="genaiGuidanceText" style="font-size:0.84rem; color:#334155; line-height:1.45; margin:0;">
+              Select a compartment and waste item, then click "Throw Waste into 3D Bin". The optical sensor will inspect
+              the item, verify segregation, and display feedback.
+            </p>
+          </div>
+
+          <!-- Locality Score Impact -->
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding:12px 14px; background:#ffffff; border-radius:10px; border:1px solid var(--glass-border);">
+            <div>
+              <span style="font-size:0.75rem; color:var(--text-dim); display:block;">Locality Segregation
+                Compliance</span>
+              <strong style="font-size:1.1rem; color:var(--emerald);" id="miniSegScore">92% Compliance</strong>
+            </div>
+            <span class="badge" style="background:#ecfdf5; color:var(--emerald-dark); font-weight:700;"
+              id="scoreDeltaBadge">● Live Synchronized</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent 3D Drops History (SQLite Logged) -->
+      <div class="card card-wide">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">📜 Recent 3D Waste Drops (Digital Twin Database)</h3>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Logged to SQLite Database (waste_twin.db)</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="drops-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Waste Item</th>
+                <th>Chosen Bin</th>
+                <th>CV Classification</th>
+                <th>Result</th>
+                <th>Locality Score</th>
+              </tr>
+            </thead>
+            <tbody id="recentDropsTbody">
+              <!-- JS dynamically fills from STATE.drops -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== PAGE: COLLECTOR PORTAL ====== -->
+    <section id="page-collector" class="page">
+      <header class="page-header">
+        <h2>Waste Collector Portal</h2>
+        <p class="subtitle">Login to view pickup assignments · Bin alerts · QR scan at collection</p>
+      </header>
+
+      <!-- Login Form (shown first) -->
+      <div id="collectorLogin" class="collector-login">
+        <div class="card card-login">
+          <div class="login-header">
+            <span class="login-icon">🚛</span>
+            <h3>Collector Login</h3>
+          </div>
+          <form id="loginForm" autocomplete="off">
+            <div class="form-group">
+              <label for="workerId">Worker ID</label>
+              <input type="text" id="workerId" placeholder="e.g. WK-1001" required />
+            </div>
+            <div class="form-group">
+              <label for="workerPass">Password</label>
+              <input type="password" id="workerPass" placeholder="••••••••" required />
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <div class="role-toggle">
+                <button type="button" class="role-btn active" data-role="official">🏛️ Official Worker</button>
+                <button type="button" class="role-btn" data-role="picker">♻️ Waste Picker</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Login</button>
+          </form>
+          <p class="login-hint">Demo: use any ID / password</p>
+        </div>
+      </div>
+
+      <!-- After Login: Worker Dashboard -->
+      <div id="collectorDashboard" class="collector-dash hidden">
+        <div class="dash-topbar">
+          <div class="worker-info">
+            <span class="worker-avatar">👷</span>
+            <div>
+              <strong id="workerName">Worker Name</strong>
+              <span class="worker-role" id="workerRole">Official Worker</span>
+            </div>
+          </div>
+          <button class="btn btn-outline" id="btnLogout">Logout</button>
+        </div>
+
+        <!-- Pickup Alerts -->
+        <div class="card card-wide">
+          <h3>🔔 Bin Alerts – Ready for Pickup</h3>
+          <div class="alerts-list" id="alertsList">
+            <!-- JS fills -->
+          </div>
+        </div>
+
+        <!-- Active Pickups -->
+        <div class="card card-wide">
+          <h3>📋 My Pickups Today</h3>
+          <div class="pickups-list" id="pickupsList">
+            <p class="placeholder">No active pickups. Accept a bin alert above.</p>
+          </div>
+        </div>
+
+        <!-- QR Scan Simulation -->
+        <div class="card card-wide">
+          <h3>📱 QR Scan &amp; Weigh</h3>
+          <div class="qr-section">
+            <div class="qr-visual" id="qrVisual">
+              <div class="qr-placeholder">
+                <span>📱</span>
+                <p>Select a pickup to scan QR</p>
+              </div>
+            </div>
+            <div class="weigh-section hidden" id="weighSection">
+              <div class="weigh-card">
+                <label>Weight at Drop-off (kg)</label>
+                <input type="number" id="weighInput" value="12.5" step="0.1" />
+                <button class="btn btn-primary" id="btnConfirmDrop">Confirm Drop-off</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== PAGE: WASTE TRACKING ====== -->
+    <section id="page-tracking" class="page">
+      <header class="page-header">
+        <h2>Waste Tracking – Digital Twin</h2>
+        <p class="subtitle">Track waste from household bins → collection trucks → processing destinations</p>
+      </header>
+
+      <!-- Flow Timeline -->
+      <div class="card card-wide">
+        <h3>📅 Day Lifecycle</h3>
+        <div class="timeline" id="dayTimeline">
+          <div class="tl-step done" data-step="fill">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Households Fill Bins</strong>
+              <small>6 AM – 8 AM</small>
+            </div>
+          </div>
+          <div class="tl-connector"></div>
+          <div class="tl-step" data-step="collect">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Official Morning Collection</strong>
+              <small>8 AM – 10 AM</small>
+            </div>
+          </div>
+          <div class="tl-connector"></div>
+          <div class="tl-step" data-step="refill">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Bins Refill During Day</strong>
+              <small>10 AM – 5 PM</small>
+            </div>
+          </div>
+          <div class="tl-connector"></div>
+          <div class="tl-step" data-step="picker">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Full → Alert Waste Pickers</strong>
+              <small>When bin &gt; 80%</small>
+            </div>
+          </div>
+          <div class="tl-connector"></div>
+          <div class="tl-step" data-step="deliver">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Delivered to Destinations</strong>
+              <small>Sorted by waste type</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated Flow Diagram -->
+      <div class="card card-wide card-flow">
+        <h3>🔄 Live Waste Flow</h3>
+        <div class="flow-diagram" id="flowDiagram">
+          <svg id="flowSvg" viewBox="0 0 1100 420" preserveAspectRatio="xMidYMid meet">
+            <!-- Definitions -->
+            <defs>
+              <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#4A7C59" />
+              </marker>
+              <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3B82F6" />
+              </marker>
+              <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#EF4444" />
+              </marker>
+              <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280" />
+              </marker>
+              <!-- Animated dot -->
+              <circle id="dotTemplate" r="5" opacity="0.9" />
+            </defs>
+
+            <!-- COLUMN 1: Households -->
+            <g class="flow-col" transform="translate(30,30)">
+              <rect x="0" y="0" width="140" height="360" rx="16" class="flow-box flow-home" />
+              <text x="70" y="30" text-anchor="middle" class="flow-title">🏠 Households</text>
+              <g id="flowHouses">
+                <!-- JS renders houses -->
+              </g>
+            </g>
+
+            <!-- COLUMN 2: Smart Bins -->
+            <g class="flow-col" transform="translate(230,30)">
+              <rect x="0" y="0" width="140" height="360" rx="16" class="flow-box flow-bins" />
+              <text x="70" y="30" text-anchor="middle" class="flow-title">🗑️ Smart Bins</text>
+              <g id="flowBins">
+                <!-- JS renders bins -->
+              </g>
+            </g>
+
+            <!-- Arrows: Houses → Bins -->
+            <line x1="170" y1="110" x2="230" y2="110" class="flow-arrow arrow-default" marker-end="url(#arrowGreen)" />
+            <line x1="170" y1="190" x2="230" y2="190" class="flow-arrow arrow-default" marker-end="url(#arrowBlue)" />
+            <line x1="170" y1="270" x2="230" y2="270" class="flow-arrow arrow-default" marker-end="url(#arrowRed)" />
+            <line x1="170" y1="340" x2="230" y2="340" class="flow-arrow arrow-default" marker-end="url(#arrowGray)" />
+
+            <!-- COLUMN 3: Collection Trucks -->
+            <g class="flow-col" transform="translate(450,100)">
+              <rect x="0" y="0" width="160" height="220" rx="16" class="flow-box flow-trucks" />
+              <text x="80" y="30" text-anchor="middle" class="flow-title">🚛 Trucks</text>
+              <g id="flowTrucks">
+                <!-- JS renders trucks -->
+              </g>
+            </g>
+
+            <!-- Arrows: Bins → Trucks -->
+            <path d="M 370 110 Q 410 110 450 160" class="flow-arrow arrow-green" marker-end="url(#arrowGreen)" />
+            <path d="M 370 190 Q 410 190 450 210" class="flow-arrow arrow-blue" marker-end="url(#arrowBlue)" />
+            <path d="M 370 270 Q 410 270 450 260" class="flow-arrow arrow-red" marker-end="url(#arrowRed)" />
+            <path d="M 370 340 Q 410 340 450 300" class="flow-arrow arrow-gray" marker-end="url(#arrowGray)" />
+
+            <!-- COLUMN 4: Destinations -->
+            <g class="flow-col" transform="translate(700,10)">
+              <rect x="0" y="0" width="180" height="90" rx="12" class="flow-box flow-dest dest-compost" />
+              <text x="90" y="35" text-anchor="middle" class="flow-dest-title">🌱 Compost Facility</text>
+              <text x="90" y="58" text-anchor="middle" class="flow-dest-sub" id="destCompost">Capacity: 62%</text>
+              <text x="90" y="78" text-anchor="middle" class="flow-dest-status" id="destCompostStatus">● Active</text>
+            </g>
+            <g class="flow-col" transform="translate(700,110)">
+              <rect x="0" y="0" width="180" height="90" rx="12" class="flow-box flow-dest dest-recycle" />
+              <text x="90" y="35" text-anchor="middle" class="flow-dest-title">📦 Recycling Yard</text>
+              <text x="90" y="58" text-anchor="middle" class="flow-dest-sub" id="destRecycle">Capacity: 45%</text>
+              <text x="90" y="78" text-anchor="middle" class="flow-dest-status" id="destRecycleStatus">● Active</text>
+            </g>
+            <g class="flow-col" transform="translate(700,210)">
+              <rect x="0" y="0" width="180" height="90" rx="12" class="flow-box flow-dest dest-hazard" />
+              <text x="90" y="35" text-anchor="middle" class="flow-dest-title">☣️ Safe Disposal</text>
+              <text x="90" y="58" text-anchor="middle" class="flow-dest-sub" id="destHazard">Capacity: 18%</text>
+              <text x="90" y="78" text-anchor="middle" class="flow-dest-status" id="destHazardStatus">● Active</text>
+            </g>
+            <g class="flow-col" transform="translate(700,310)">
+              <rect x="0" y="0" width="180" height="90" rx="12" class="flow-box flow-dest dest-landfill" />
+              <text x="90" y="35" text-anchor="middle" class="flow-dest-title">🏗️ Landfill</text>
+              <text x="90" y="58" text-anchor="middle" class="flow-dest-sub" id="destLandfill">Capacity: 73%</text>
+              <text x="90" y="78" text-anchor="middle" class="flow-dest-status" id="destLandfillStatus">● Active</text>
+            </g>
+
+            <!-- Arrows: Trucks → Destinations -->
+            <path d="M 610 160 Q 660 80 700 55" class="flow-arrow arrow-green" marker-end="url(#arrowGreen)" />
+            <path d="M 610 210 Q 660 180 700 155" class="flow-arrow arrow-blue" marker-end="url(#arrowBlue)" />
+            <path d="M 610 260 Q 660 260 700 255" class="flow-arrow arrow-red" marker-end="url(#arrowRed)" />
+            <path d="M 610 300 Q 660 340 700 355" class="flow-arrow arrow-gray" marker-end="url(#arrowGray)" />
+
+            <!-- Animated moving dots (JS controls) -->
+            <g id="movingDots"></g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Worker Tracker + Destination Status -->
+      <div class="tracking-grid">
+        <div class="card">
+          <h3>👷 Active Workers</h3>
+          <div class="workers-list" id="workersList">
+            <!-- JS fills -->
+          </div>
+        </div>
+        <div class="card">
+          <h3>🏭 Destination Capacity</h3>
+          <div class="dest-bars" id="destBars">
+            <!-- JS fills -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Event Log -->
+      <div class="card card-wide">
+        <h3>📜 Live Event Log</h3>
+        <div class="event-log" id="eventLog">
+          <div class="log-entry"><span class="log-time">06:00</span><span class="log-msg">Simulation started. Households
+              begin filling bins.</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- 3D Graphics Engine: Three.js (Local offline + CDN fallback) -->
+  <script src="backend/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+
+  <!-- Backend: config, data store, 3D Digital Twin Engine, API layer (load first) -->
+  <script src="backend/config.js"></script>
+  <script src="backend/data.js"></script>
+  <script src="backend/bin_twin_3d.js"></script>
+  <script src="backend/api.js"></script>
+
+  <!-- Frontend: UI rendering & event handlers (load last) -->
+  <script src="frontend/js/ui.js"></script>
+</body>
+
+</html>
